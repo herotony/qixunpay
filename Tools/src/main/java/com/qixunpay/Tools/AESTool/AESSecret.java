@@ -40,7 +40,7 @@ public class AESSecret {
     public static byte[] generateKey() throws NoSuchAlgorithmException
     {
         KeyGenerator keyGenerator = KeyGenerator.getInstance("AES");
-        keyGenerator.init(128);
+        keyGenerator.init(128);//128位，192位，256位三种
         SecretKey secretKey = keyGenerator.generateKey();
         return secretKey.getEncoded();
     }
@@ -79,13 +79,14 @@ public class AESSecret {
     public static void main(String[] argv)
             throws NoSuchAlgorithmException, InvalidKeyException, InvalidKeySpecException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException
     {
+        //生成加密key举例Str
         System.out.println(byteArr2HexStr(generateKey()));
 
         //加密举例
         String encryptStr = byteArr2HexStr(new AESSecret().encrypt("password".getBytes()));
         System.out.println("encrypt:"+encryptStr+" for:password");
 
-        //揭秘举例
+        //解密举例，主站的mysql.findpassword就是该例子的简单封装，本类完全采用JDK自带jce.jar实现
         String decryptStr = new String(new AESSecret().decrypt(hexStr2ByteArr(encryptStr)));
         System.out.println("decrypt:"+encryptStr+" get original-value:"+decryptStr);
     }
