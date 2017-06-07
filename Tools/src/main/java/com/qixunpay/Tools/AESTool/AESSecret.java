@@ -14,7 +14,9 @@ public class AESSecret {
 
     public static final String KEY_ALGORITHM = "AES";
     public static final String CIPHER_ALGORITHM = "AES/ECB/PKCS5Padding";
-    private final String keyStr = "94327d4ffeab36fc89cb25427050fb2c";//由generatekey方法随机生成使用
+    //private final String keyStr = "94327d4ffeab36fc89cb25427050fb2c";//由generatekey方法随机生成使用
+
+    private final String keyStr = "0a86087a11f668b11a43c412bc173402"; //sh线上key
 
     public byte[] encrypt(byte[] data)
             throws InvalidKeyException, NoSuchAlgorithmException, InvalidKeySpecException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException
@@ -85,6 +87,8 @@ public class AESSecret {
         //加密举例
         String encryptStr = byteArr2HexStr(new AESSecret().encrypt("password".getBytes()));
         System.out.println("encrypt:"+encryptStr+" for:password");
+
+        //encryptStr="6a778853e718e1fdcab4430c0fdda88157e29e2b1a55a7916aa244407e923e34";
 
         //解密举例，主站的mysql.findpassword就是该例子的简单封装，本类完全采用JDK自带jce.jar实现
         String decryptStr = new String(new AESSecret().decrypt(hexStr2ByteArr(encryptStr)));
