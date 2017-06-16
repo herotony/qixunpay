@@ -50,3 +50,7 @@ Temporary Items
 *.iml
 *.iml
 .idea/
+*.lst
+*.war
+webapp/target/
+Tools/target/
