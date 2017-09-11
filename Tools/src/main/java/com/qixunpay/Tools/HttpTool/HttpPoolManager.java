@@ -44,6 +44,8 @@ public class HttpPoolManager {
     private RequestConfig requestConfig = null;
     private String hostName = null;
     private boolean bInit = false;
+    private IdleConnectionMonitorThread idleConnectionMonitorThread;
+    private  Thread monitorThread = null;
 
     public CloseableHttpClient getHttpClient() {
         return httpClient;
@@ -56,6 +58,11 @@ public class HttpPoolManager {
     public HttpPoolManager(String hostUrl, int hostPort){
 
         Init(hostUrl,hostPort);
+
+        idleConnectionMonitorThread = new IdleConnectionMonitorThread(poolConnectionManager);
+        monitorThread = new Thread(idleConnectionMonitorThread);
+        monitorThread.start();
+        logger.info("idle connection monitor thread start successfully");
     }
 
     private void Init(String hostUrl, int hostPort){
