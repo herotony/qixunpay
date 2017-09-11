@@ -66,7 +66,7 @@ public class AESSecret {
         return sb.toString();
     }
 
-    public static byte[] hexStr2ByteArr(String strIn) {
+    private static byte[] hexStr2ByteArr(String strIn) {
         byte[] arrB = strIn.getBytes();
         int iLen = arrB.length;
 
@@ -84,11 +84,12 @@ public class AESSecret {
         //生成加密key举例Str
         System.out.println(byteArr2HexStr(generateKey()));
 
-        //加密举例
+        //加密举例，d40d19a0ca8e4aa041a8bc3b5a5d935a967aafb15ac72231377dc70423a4f532
         String encryptStr = byteArr2HexStr(new AESSecret().encrypt("password".getBytes()));
         System.out.println("encrypt:"+encryptStr+" for:password");
 
         //encryptStr="6a778853e718e1fdcab4430c0fdda88157e29e2b1a55a7916aa244407e923e34";
+        //encryptStr ="d40d19a0ca8e4aa041a8bc3b5a5d935a967aafb15ac72231377dc70423a4f532";
 
         //解密举例，主站的mysql.findpassword就是该例子的简单封装，本类完全采用JDK自带jce.jar实现
         String decryptStr = new String(new AESSecret().decrypt(hexStr2ByteArr(encryptStr)));
