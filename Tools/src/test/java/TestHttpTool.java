@@ -49,15 +49,26 @@ public class TestHttpTool {
                     final FutureTask<String> future = new FutureTask<String>(new Callable<String>() {
                         public String call() throws Exception {
 
+
+
                             logger.info(Thread.currentThread().getId()+" start http request");
                             HttpPost httpPost = new HttpPost("http://10.9.28.109:9040/wftpayNotify.do");
+
+                            long starttime = System.currentTimeMillis();
+                            long begintime = starttime;
                             HttpClient client = httpPoolManager.getHttpClient();
+
+                            logger.info("pick connection ["+Thread.currentThread().getId()+"] usetime:"+(System.currentTimeMillis()-starttime));
+                            starttime = System.currentTimeMillis();
 
                             String data = "{\"tradeno\":\"W170911\",\"thid\":"+Thread.currentThread().getId()+"}";
                             StringEntity params = new StringEntity(data,"UTF-8");
                             params.setContentType("application/json");
                             httpPost.setEntity(params);
                             CloseableHttpResponse response =  (CloseableHttpResponse) client.execute(httpPost);
+
+                            logger.info("httpclient execute ["+Thread.currentThread().getId()+"] usetime:"+(System.currentTimeMillis()-starttime));
+                            starttime=System.currentTimeMillis();
                             int responseCode = response.getStatusLine().getStatusCode();
 
                             StringBuilder sb = new StringBuilder();
@@ -81,7 +92,9 @@ public class TestHttpTool {
 
                             if(response!=null)
                                 response.close();
+                            logger.info("proc result ["+Thread.currentThread().getId()+"] usetime:"+(System.currentTimeMillis()-starttime));
 
+                            logger.info("total http["+Thread.currentThread().getId()+"] usetime:"+(System.currentTimeMillis()-begintime));
                             return sb.toString();
                         }
                     });
