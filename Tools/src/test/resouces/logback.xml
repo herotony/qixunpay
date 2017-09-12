@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <!-- <property resource="app.properties" /> -->
+    <property name="pattern.category" value="%c{2}"/>
+    <!-- default log -->
+    <appender name="DEFAULT-APPENDER" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>d:/default/common-default.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>d:/default/common-default.log.%d{yyyyMMddhh}</fileNamePattern>
+        </rollingPolicy>
+        <encoder charset="UTF-8">
+            <pattern>%d [%t] %-5p ${pattern.category} - [%m]%n</pattern>
+        </encoder>
+    </appender>
+    <appender name="ERROR-APPENDER" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>d:/default/common-error.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>d:/default/common-error.log.%d{yyyyMMddhh}</fileNamePattern>
+        </rollingPolicy>
+        <encoder charset="UTF-8">
+            <pattern>%d [%t] %-5p ${pattern.category} - [%m]%n</pattern>
+        </encoder>
+    </appender>
+
+    <logger name="errorLogger" additivity="false">
+        <level value="DEBUG"/>
+        <appender-ref ref="ERROR-APPENDER" />
+    </logger>
+
+    <root level="DEBUG">
+        <appender-ref ref="DEFAULT-APPENDER"></appender-ref>
+    </root>
+
+</configuration>

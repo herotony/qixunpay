@@ -37,4 +37,9 @@ public class IndexController {
 
         return bulkPostData.getListJsonData().get(0);
     }
+
+    public String getCheckPoolData() throws Exception{
+
+        return "";
+    }
 }

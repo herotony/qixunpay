@@ -109,7 +109,7 @@ public class HttpPoolManager {
                         String value = he.getValue();
                         if (value != null && param.equalsIgnoreCase("timeout")) {
                             try {
-                                logger.info("host:"+hostName+" set keepAlive timeout;"+value+"s");
+                                logger.info("host:"+hostName+" on [http thid:"+Thread.currentThread().getId()+"] set keepAlive timeout;"+value+"s");
                                 return Long.parseLong(value) * 1000;
                             } catch(NumberFormatException ignore) {
                             }
@@ -118,12 +118,12 @@ public class HttpPoolManager {
                     HttpHost target = (HttpHost) httpContext.getAttribute(
                             HttpClientContext.HTTP_TARGET_HOST);
                     if (hostName.equalsIgnoreCase(target.getHostName())) {
-                        // Keep alive for 10 seconds only
-                        logger.info("host:"+hostName+" dont set timeout ,so we set keepAlive timeout;10s");
-                        return 10 * 1000;
+                        // we will keep alive 2 hours,close idle connection [idle 30s] by another monitor thread
+                        logger.info("host:"+hostName+"  on [http thid:"+Thread.currentThread().getId()+"] dont set timeout ,so we set keepAlive timeout;2 hours");
+                        return 2*60*60*1000;
                     } else {
                         // otherwise keep alive for 30 seconds
-                        logger.info("other-host:"+hostName+" dont set timeout ,so we set keepAlive timeout;30s");
+                        logger.info("other-host:"+hostName+"  on [http thid:"+Thread.currentThread().getId()+"] dont set timeout ,so we set keepAlive timeout;30s");
                         return 30 * 1000;
                     }
                 }

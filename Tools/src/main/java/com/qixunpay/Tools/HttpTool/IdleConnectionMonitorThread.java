@@ -30,7 +30,8 @@ public class IdleConnectionMonitorThread extends  Thread{
                 synchronized (this){
 
                     wait(1000);
-                    poolingHttpClientConnectionManager.closeIdleConnections(20, TimeUnit.SECONDS);
+                    poolingHttpClientConnectionManager.closeIdleConnections(30, TimeUnit.SECONDS);
+                    logger.info("close idle finish");
                 }
             }
         }catch(Exception monitorRunErr)
