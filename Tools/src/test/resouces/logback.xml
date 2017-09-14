@@ -6,7 +6,7 @@
     <appender name="DEFAULT-APPENDER" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>d:/default/common-default.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>d:/default/common-default.log.%d{yyyyMMddhh}</fileNamePattern>
+            <fileNamePattern>d:/default/common-default.log.%d{yyyyMMddHH}</fileNamePattern>
         </rollingPolicy>
         <encoder charset="UTF-8">
             <pattern>%d [%t] %-5p ${pattern.category} - [%m]%n</pattern>
@@ -15,7 +15,7 @@
     <appender name="ERROR-APPENDER" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>d:/default/common-error.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>d:/default/common-error.log.%d{yyyyMMddhh}</fileNamePattern>
+            <fileNamePattern>d:/default/common-error.log.%d{yyyyMMddHH}</fileNamePattern>
         </rollingPolicy>
         <encoder charset="UTF-8">
             <pattern>%d [%t] %-5p ${pattern.category} - [%m]%n</pattern>

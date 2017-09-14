@@ -1,9 +1,7 @@
 package com.qixunpay.Tools.HttpTool;
 
 import org.apache.http.*;
-import org.apache.http.client.HttpRequestRetryHandler;
 import org.apache.http.client.config.RequestConfig;
-import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.config.Registry;
 import org.apache.http.config.RegistryBuilder;
 import org.apache.http.conn.ConnectionKeepAliveStrategy;
@@ -13,18 +11,11 @@ import org.apache.http.conn.socket.LayeredConnectionSocketFactory;
 import org.apache.http.conn.socket.PlainConnectionSocketFactory;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.DefaultClientConnectionReuseStrategy;
-import org.apache.http.impl.client.DefaultHttpRequestRetryHandler;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
-import org.apache.http.message.BasicHeaderElementIterator;
-import org.apache.http.protocol.HTTP;
-import org.apache.http.protocol.HttpContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.net.URL;
 
 /**
  * Created by saosinwork on 2017/9/11.
@@ -37,12 +28,10 @@ public class HttpPoolManager {
     private LayeredConnectionSocketFactory sslSF = null;
     private PoolingHttpClientConnectionManager poolConnectionManager = null;
     private Registry<ConnectionSocketFactory> registry = null;
-    private int maxConnectionCount = 300;
+    private int maxConnectionCount = 3;
     private CloseableHttpClient httpClient = null;
     private ConnectionKeepAliveStrategy connectionKeepAliveStrategy = null;
-    private HttpRequestRetryHandler httpRequestRetryHandler = null;
     private RequestConfig requestConfig = null;
-    private String hostName = null;
     private boolean bInit = false;
     private IdleConnectionMonitorThread idleConnectionMonitorThread;
     private  Thread monitorThread = null;
@@ -51,12 +40,9 @@ public class HttpPoolManager {
         return httpClient;
     }
 
-    public RequestConfig getRequestConfig() {
-        return requestConfig;
-    }
+    public HttpPoolManager(String hostUrl, int hostPort,int maxConnectionCount){
 
-    public HttpPoolManager(String hostUrl, int hostPort){
-
+        this.maxConnectionCount = maxConnectionCount;
         Init(hostUrl,hostPort);
 
         idleConnectionMonitorThread = new IdleConnectionMonitorThread(poolConnectionManager);
@@ -71,11 +57,6 @@ public class HttpPoolManager {
             return;
 
         try{
-
-            URL urlInfo = new URL(hostUrl);
-
-            hostName = urlInfo.getHost();
-
             requestConfig = RequestConfig.custom()
                     .setConnectionRequestTimeout(1000) //pick connection from pool.
                     .setConnectTimeout(3000)
@@ -93,48 +74,10 @@ public class HttpPoolManager {
             poolConnectionManager.setDefaultMaxPerRoute(maxConnectionCount);
             HttpHost httpHost = new HttpHost(hostUrl,hostPort);
             poolConnectionManager.setMaxPerRoute(new HttpRoute(httpHost),maxConnectionCount);
-            poolConnectionManager.setValidateAfterInactivity(1000);//池中闲置1秒就check一次该连接的有效性
-
-            httpRequestRetryHandler = new DefaultHttpRequestRetryHandler(1,true);
-
-            connectionKeepAliveStrategy = new ConnectionKeepAliveStrategy() {
-                public long getKeepAliveDuration(HttpResponse httpResponse, HttpContext httpContext) {
-
-                    // Honor 'keep-alive' header
-                    HeaderElementIterator it = new BasicHeaderElementIterator(
-                            httpResponse.headerIterator(HTTP.CONN_KEEP_ALIVE));
-                    while (it.hasNext()) {
-                        HeaderElement he = it.nextElement();
-                        String param = he.getName();
-                        String value = he.getValue();
-                        if (value != null && param.equalsIgnoreCase("timeout")) {
-                            try {
-                                logger.info("host:"+hostName+" on [http thid:"+Thread.currentThread().getId()+"] set keepAlive timeout;"+value+"s");
-                                return Long.parseLong(value) * 1000;
-                            } catch(NumberFormatException ignore) {
-                            }
-                        }
-                    }
-                    HttpHost target = (HttpHost) httpContext.getAttribute(
-                            HttpClientContext.HTTP_TARGET_HOST);
-                    if (hostName.equalsIgnoreCase(target.getHostName())) {
-                        // we will keep alive 2 hours,close idle connection [idle 30s] by another monitor thread
-                        logger.info("host:"+hostName+"  on [http thid:"+Thread.currentThread().getId()+"] dont set timeout ,so we set keepAlive timeout;2 hours");
-                        return 2*60*60*1000;
-                    } else {
-                        // otherwise keep alive for 30 seconds
-                        logger.info("other-host:"+hostName+"  on [http thid:"+Thread.currentThread().getId()+"] dont set timeout ,so we set keepAlive timeout;30s");
-                        return 30 * 1000;
-                    }
-                }
-            };
 
             httpClient = HttpClients.custom().setConnectionManager(poolConnectionManager)
-                    .setRetryHandler(httpRequestRetryHandler)
                     .setKeepAliveStrategy(connectionKeepAliveStrategy)
-                    .setConnectionReuseStrategy(new DefaultClientConnectionReuseStrategy())
                     .build();
-
 
             logger.info("init poolConnectionManager successfully");
 
