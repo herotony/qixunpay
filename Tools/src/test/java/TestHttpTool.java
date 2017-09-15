@@ -47,10 +47,14 @@ public class TestHttpTool {
 
         try{
 
+            long beginTime = System.currentTimeMillis();
+            int changeMax =10;
+
             while(true){
 
                 //list.clear();
-                for(int i=0;i<300;i++){
+
+                for(int i=0;i<changeMax;i++){
 
                     final HttpProcFutureTask future = new HttpProcFutureTask(new Callable<String>() {
 
@@ -121,6 +125,22 @@ public class TestHttpTool {
                        errLogger.error(ex.getMessage());
                    }
                 }*/
+
+                long consumeTime = System.currentTimeMillis()-beginTime;
+
+                //服务器keepalive为5s
+                //追加压入数量，使连接池尽快打满
+                if(consumeTime>1000 && consumeTime<2000){
+                    changeMax +=30;
+                }
+
+                //连接池固定配得较小，比如：6条，骤减压入数量导致连接池连接idle，后续可易导致取到idle无效连接。
+                if(consumeTime>2000 && consumeTime<6000){
+                    changeMax = 1;
+                }
+
+                if(consumeTime>6000)
+                    beginTime = System.currentTimeMillis();
 
                 Thread.sleep(100);
             }
