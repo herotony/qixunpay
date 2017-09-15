@@ -43,7 +43,7 @@ public class TestHttpTool {
 
         //List<FutureTask<String>> list = new ArrayList<FutureTask<String>>();
 
-        ExecutorService executorService = Executors.newFixedThreadPool(60);
+        ExecutorService executorService = Executors.newFixedThreadPool(100);
 
         try{
 
@@ -122,7 +122,7 @@ public class TestHttpTool {
                    }
                 }*/
 
-                Thread.sleep(10);
+                Thread.sleep(100);
             }
 
 
@@ -141,7 +141,7 @@ public class TestHttpTool {
         final Logger logger = LoggerFactory.getLogger("testHttpPool");
         final Logger errLogger = LoggerFactory.getLogger("errorLogger");
 
-        ExecutorService executorService = Executors.newFixedThreadPool(60);
+        ExecutorService executorService = Executors.newFixedThreadPool(100);
 
         try{
 
@@ -206,7 +206,7 @@ public class TestHttpTool {
                     executorService.submit(future);
                 }
 
-                Thread.sleep(10);
+                Thread.sleep(100);
             }
         }catch (Exception runErr){
 
