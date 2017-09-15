@@ -11,6 +11,7 @@ import org.apache.http.conn.socket.LayeredConnectionSocketFactory;
 import org.apache.http.conn.socket.PlainConnectionSocketFactory;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.DefaultClientConnectionReuseStrategy;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.slf4j.Logger;
@@ -30,7 +31,6 @@ public class HttpPoolManager {
     private Registry<ConnectionSocketFactory> registry = null;
     private int maxConnectionCount = 3;
     private CloseableHttpClient httpClient = null;
-    private ConnectionKeepAliveStrategy connectionKeepAliveStrategy = null;
     private RequestConfig requestConfig = null;
     private boolean bInit = false;
     private IdleConnectionMonitorThread idleConnectionMonitorThread;
@@ -46,8 +46,8 @@ public class HttpPoolManager {
         Init(hostUrl,hostPort);
 
         idleConnectionMonitorThread = new IdleConnectionMonitorThread(poolConnectionManager);
-        monitorThread = new Thread(idleConnectionMonitorThread);
-        monitorThread.start();
+        //monitorThread = new Thread(idleConnectionMonitorThread);
+        //monitorThread.start();
         logger.info("idle connection monitor thread start successfully");
     }
 
@@ -76,7 +76,8 @@ public class HttpPoolManager {
             poolConnectionManager.setMaxPerRoute(new HttpRoute(httpHost),maxConnectionCount);
 
             httpClient = HttpClients.custom().setConnectionManager(poolConnectionManager)
-                    .setKeepAliveStrategy(connectionKeepAliveStrategy)
+                    .setConnectionReuseStrategy(new DefaultClientConnectionReuseStrategy())
+                    .setDefaultRequestConfig(requestConfig)
                     .build();
 
             logger.info("init poolConnectionManager successfully");

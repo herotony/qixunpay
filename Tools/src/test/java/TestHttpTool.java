@@ -23,8 +23,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.FutureTask;
+import java.util.concurrent.*;
 
 /**
  * Created by saosinwork on 2017/9/12.
@@ -42,16 +41,18 @@ public class TestHttpTool {
         final Logger logger = LoggerFactory.getLogger("testHttpPool");
         final Logger errLogger = LoggerFactory.getLogger("errorLogger");
 
-        List<FutureTask<String>> list = new ArrayList<FutureTask<String>>();
+        //List<FutureTask<String>> list = new ArrayList<FutureTask<String>>();
+
+        ExecutorService executorService = Executors.newFixedThreadPool(60);
 
         try{
 
             while(true){
 
-                list.clear();
-                for(int i=0;i<1000;i++){
+                //list.clear();
+                for(int i=0;i<300;i++){
 
-                    final FutureTask<String> future = new FutureTask<String>(new Callable<String>() {
+                    final HttpProcFutureTask future = new HttpProcFutureTask(new Callable<String>() {
 
                         public String call() throws Exception {
 
@@ -103,12 +104,15 @@ public class TestHttpTool {
                         }
                     });
 
-                    list.add(future);
-                    new Thread(future).start();
+                    //list.add(future);
+                    //new Thread(future).start();
+                    executorService.submit(future);
                 }
 
 
-                for (FutureTask<String> futrue:list
+
+
+                /*for (FutureTask<String> futrue:list
                      ) {
                    try{
 
@@ -116,13 +120,18 @@ public class TestHttpTool {
                    }catch(Exception ex){
                        errLogger.error(ex.getMessage());
                    }
-                }
+                }*/
 
-                Thread.sleep(100);
+                Thread.sleep(10);
             }
+
+
         }catch (Exception outEx){
 
             errLogger.error("fucking break forever:"+outEx);
+        }finally {
+
+            executorService.shutdown();
         }
     }
 
@@ -132,16 +141,16 @@ public class TestHttpTool {
         final Logger logger = LoggerFactory.getLogger("testHttpPool");
         final Logger errLogger = LoggerFactory.getLogger("errorLogger");
 
+        ExecutorService executorService = Executors.newFixedThreadPool(60);
+
         try{
 
-            List<FutureTask<String>> list = new ArrayList<FutureTask<String>>();
 
             while(true) {
 
-                list.clear();
-                for(int i=0;i<1000;i++){
+                for(int i=0;i<300;i++){
 
-                    final FutureTask<String> future = new FutureTask<String>(new Callable<String>() {
+                    final HttpProcFutureTask future = new HttpProcFutureTask(new Callable<String>() {
 
                         public String call() throws Exception {
 
@@ -193,26 +202,43 @@ public class TestHttpTool {
                         }
                     });
 
-                    list.add(future);
-                    new Thread(future).start();
+                    //new Thread(future).start();
+                    executorService.submit(future);
                 }
 
-                for (FutureTask<String> futrue : list) {
-                    try {
-
-                        logger.info("final return data:" + futrue.get());
-                    } catch (Exception ex) {
-                        errLogger.error(ex.getMessage());
-                    }
-                }
-
-                Thread.sleep(100);
+                Thread.sleep(10);
             }
         }catch (Exception runErr){
 
             errLogger.error("fucking break forever:"+runErr);
+        }finally {
+
+            executorService.shutdown();
         }
 
+    }
+
+    class HttpProcFutureTask extends FutureTask<String>{
+
+        private long startTime = System.currentTimeMillis();
+
+        public HttpProcFutureTask(Callable<String> callable){
+
+            super(callable);
+        }
+
+        @Override
+        protected void done(){
+
+            try{
+
+                System.out.println(get()+" complete!");
+
+            }catch(Exception e){
+
+                e.printStackTrace();
+            }
+        }
     }
 
 
