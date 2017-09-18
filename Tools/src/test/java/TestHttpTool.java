@@ -61,7 +61,7 @@ public class TestHttpTool {
                         public String call() throws Exception {
 
                             logger.info(Thread.currentThread().getId()+" start http request");
-                            HttpPost httpPost = new HttpPost("http://10.9.28.109:9040/wftpayNotify.do");
+                            HttpPost httpPost = new HttpPost("http://10.9.210.131:9040/wftpayNotify.do");
 
                             long starttime = System.currentTimeMillis();
                             long begintime = starttime;
@@ -134,13 +134,22 @@ public class TestHttpTool {
                     changeMax +=30;
                 }
 
+                //确保都idle了,维持16秒，确保服务器已断
+                if(consumeTime>2000 && consumeTime<16000)
+                    changeMax = 0;
+
+
                 //连接池固定配得较小，比如：6条，骤减压入数量导致连接池连接idle，后续可易导致取到idle无效连接。
-                if(consumeTime>2000 && consumeTime<6000){
+                if(consumeTime>16000 && consumeTime<18000){
                     changeMax = 1;
                 }
 
-                if(consumeTime>6000)
-                    beginTime = System.currentTimeMillis();
+                /*
+                if(consumeTime>18000)
+                    changeMax =10;
+
+               if(consumeTime>6000)
+                    beginTime = System.currentTimeMillis();*/
 
                 Thread.sleep(100);
             }

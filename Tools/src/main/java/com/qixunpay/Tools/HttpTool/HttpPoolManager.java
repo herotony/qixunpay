@@ -17,6 +17,8 @@ import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.concurrent.TimeUnit;
+
 
 /**
  * Created by saosinwork on 2017/9/11.
@@ -46,8 +48,8 @@ public class HttpPoolManager {
         Init(hostUrl,hostPort);
 
         idleConnectionMonitorThread = new IdleConnectionMonitorThread(poolConnectionManager);
-        //monitorThread = new Thread(idleConnectionMonitorThread);
-        //monitorThread.start();
+        monitorThread = new Thread(idleConnectionMonitorThread);
+        monitorThread.start();
         logger.info("idle connection monitor thread start successfully");
     }
 
@@ -77,6 +79,7 @@ public class HttpPoolManager {
 
             httpClient = HttpClients.custom().setConnectionManager(poolConnectionManager)
                     .setConnectionReuseStrategy(new DefaultClientConnectionReuseStrategy())
+                    .setConnectionTimeToLive(20, TimeUnit.HOURS) //设置连接过期时间
                     .setDefaultRequestConfig(requestConfig)
                     .build();
 

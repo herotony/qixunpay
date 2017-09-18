@@ -31,6 +31,7 @@ public class IdleConnectionMonitorThread extends  Thread{
 
                     wait(1000);
                     poolingHttpClientConnectionManager.closeIdleConnections(30, TimeUnit.SECONDS);
+                    poolingHttpClientConnectionManager.closeExpiredConnections();
                     logger.info("close idle finish");
                 }
             }
