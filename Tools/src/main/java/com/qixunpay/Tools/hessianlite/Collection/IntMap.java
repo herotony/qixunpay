@@ -1,4 +1,4 @@
-package com.qixunpay.Tools.Collection;
+package com.qixunpay.Tools.hessianlite.Collection;
 
 /**
  * Created by saosinwork on 2017/9/20.

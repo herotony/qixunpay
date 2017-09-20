@@ -1,4 +1,4 @@
-import com.qixunpay.Tools.Collection.IntMap;
+import com.qixunpay.Tools.hessianlite.Collection.IntMap;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
@@ -22,6 +22,8 @@ public class TestCollection {
         map.put("some.f",0);
         map.put("some.t",0);
         int result = map.get("some.k");
+        if(result == IntMap.NULL)
+            System.out.println("shit");
         result = map.get("some.t");
     }
 
