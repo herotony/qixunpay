@@ -66,7 +66,7 @@ public class AESSecret {
         return sb.toString();
     }
 
-    private static byte[] hexStr2ByteArr(String strIn) {
+    public static byte[] hexStr2ByteArr(String strIn) {
         byte[] arrB = strIn.getBytes();
         int iLen = arrB.length;
 
