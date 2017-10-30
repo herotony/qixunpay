@@ -13,6 +13,7 @@
         <module>webapp</module>
         <module>Service</module>
         <module>Model</module>
+        <module>DesignPatternDemo</module>
     </modules>
     <properties>
         <org.spring.version>4.1.5.RELEASE</org.spring.version>

@@ -21,7 +21,7 @@ public enum PayRoute {
         aesSecret = new AESSecret();
     }
 
-    //最合理高效安全的单例模式，即PayRoute[单一实例类].PAYINSTANCE.Pay()方法来提供香瓜你功能
+    //最合理高效安全的单例模式，即PayRoute[单一实例类].PAYINSTANCE.Pay()方法来提供相关功能
     public void Pay() throws Exception{
         System.out.println("start pay "+u1+" "+u2);
         String encrypt = AESSecret.byteArr2HexStr( aesSecret.encrypt("测试".getBytes("utf-8")));
